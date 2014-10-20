@@ -177,10 +177,20 @@ var moves = {
   coward : function(gameData, helpers) {
     return helpers.findNearestHealthWell(gameData);
   }
+
+  // The "Careful Greedy Assassin"
+  // This hero will attempt to kill the closest weaker enemy hero.
+  carefulGreedyAssassin : function(gameData, helpers) {
+    if (gameData.activeHero.health < 67) {
+      return helpers.findNearestHealthWell(gameData);
+    } else {
+      return helpers.findNearestWeakerEnemy(gameData) || helpers.findNearestUnownedDiamondMine(gameData);
+    }
+  },
  };
 
 //  Set our heros strategy
-var  move =  moves.aggressor;
+var  move =  moves.carefulGreedyAssassin;
 
 // Export the move function here
 module.exports = move;
