@@ -115,7 +115,7 @@ var moves = {
     if (myHero.health < 50) {
       return helpers.findNearestHealthWell(gameData);
     } else {
-      return helpers.findNearestWeakerEnemy(gameData);
+      return helpers.findNearestWeakerEnemy(gameData).direction;
     }
   },
 
@@ -176,7 +176,7 @@ var moves = {
   // This hero will try really hard not to die.
   coward : function(gameData, helpers) {
     return helpers.findNearestHealthWell(gameData);
-  }
+  },
 
   // The "Careful Greedy Assassin"
   // This hero will attempt to kill the closest weaker enemy hero.
@@ -184,9 +184,14 @@ var moves = {
     if (gameData.activeHero.health < 67) {
       return helpers.findNearestHealthWell(gameData);
     } else {
-      return helpers.findNearestWeakerEnemy(gameData) || helpers.findNearestUnownedDiamondMine(gameData);
+    	var enemy = helpers.findNearestWeakerEnemy(gameData);
+    	if (enemy && helpers.count(gameData, enemy, 'Hero') < 2) {
+    		return enemy;
+    	} else {
+    		return helpers.findNearestUnownedDiamondMine(gameData);
+    	}
     }
-  },
+  }
  };
 
 //  Set our heros strategy

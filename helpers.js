@@ -213,7 +213,7 @@ helpers.findNearestWeakerEnemy = function(gameData) {
   //Return the direction that needs to be taken to achieve the goal
   //If no weaker enemy exists, will simply return undefined, which will
   //be interpreted as "Stay" by the game object
-  return pathInfoObject.direction;
+  return pathInfoObject;
 };
 
 // Returns the direction of the nearest enemy
@@ -244,6 +244,32 @@ helpers.findNearestTeamMember = function(gameData) {
 
   //Return the direction that needs to be taken to achieve the goal
   return pathInfoObject.direction;
+};
+
+helpers.count = function(gameData, fromTile, target) {
+	var board = gameData.board,
+		dft = fromTile.distanceFromTop,
+		dfl = fromTile.distanceFromLeft,
+		enemies = 0;
+	
+	//north
+	if (helpers.validCoordinates(board, dft-1, dfl) && board.tiles[dft+1][dfl].type == target) {
+		enemies++;
+	}
+	//south
+	if (helpers.validCoordinates(board, dft+1, dfl) && board.tiles[dft+1][dfl].type == target) {
+		enemies++;
+	}
+	//west
+	if (helpers.validCoordinates(board, dft, dfl-1) && board.tiles[dft][dfl-1].type == target) {
+		enemies++;
+	}
+	//west
+	if (helpers.validCoordinates(board, dft, dfl+1) && board.tiles[dft][dfl+1].type == target) {
+		enemies++;
+	}
+	//console.log('number of adjacent ' + target + 's: ' + enemies);
+	return enemies;
 };
 
 module.exports = helpers;
