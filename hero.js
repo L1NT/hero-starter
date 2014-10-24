@@ -181,7 +181,7 @@ var moves = {
   // The "Careful Greedy Assassin"
   // This hero will attempt to kill the closest weaker enemy hero.
   carefulGreedyAssassin : function(gameData, helpers) {
-    if (gameData.activeHero.health < 67) {
+    if (gameData.activeHero.health < 80) {
       return helpers.findNearestHealthWell(gameData);
     } else {
     	var enemy = helpers.findNearestWeakerEnemy(gameData);
@@ -191,11 +191,82 @@ var moves = {
     		return helpers.findNearestUnownedDiamondMine(gameData);
     	}
     }
-  }
- };
+  },
+  
+	L1NT: function(gameData, helpers) {
+		var hero = gameData.activeHero;
+		var dft = hero.distanceFromTop,
+			dfl = hero.distanceFromLeft;
+		var moves = {
+			Stay: 0,
+			North: 0,
+			East: 0,
+			South: 0,
+			West: 0
+		};
+		
+		//grave robbing
+		var nearestGrave = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
+			return tile.type === 'Bones';
+		});
+		if (nearestGrave) moves[nearestGrave.direction] += 100/nearestGrave.distance;
+		
+		//diamond mines (careful as it'll cost 20hp to take a mine)
+		var nearestMine = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
+		    if (tile.type === 'DiamondMine') {
+		        if (tile.owner) {
+		          return tile.owner.id !== hero.id;
+		        } else {
+		          return true;
+		        }
+		      } else {
+		        return false;
+		      }
+		    });
+		if (nearestMine) {
+			moves[nearestMine.direction] += (hero.health * 2) / nearestMine.distance;
+		}
+		
+		//attacking enemies (i.e. enemy is adjacent)
+		for (var dir in moves) {
+			var tile = helpers.getTileNearby(gameData.board, dft, dfl, dir);
+			if (tile && tile.type === 'Hero' && tile.team !== hero.team) {
+				moves[dir] += (hero.health - tile.health) * 3;
+			}
+		}
+		
+		//chasing enemies (i.e. moving towards)
+		
+		//replenishing health
+		var nearestHealth = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
+		    return tile.type === 'HealthWell';
+		  });
+		if (nearestHealth) {
+			moves[nearestHealth.direction] += (100-hero.health) * 4 * nearestHealth.distance;
+		}
+		
+		//helping others
+		
+		//impassable tiles
+		//(gets a value of zero, if we can't move there)
+		
+		
+		var direction,
+			value = -10000;
+		for (var dir in moves) {
+			if (moves[dir] > value) {
+				direction = dir;
+				value = moves[dir];
+			}
+		}
+		
+		return direction;
+	}
+};
+  
 
 //  Set our heros strategy
-var  move =  moves.carefulGreedyAssassin;
+var  move =  moves.L1NT;
 
 // Export the move function here
 module.exports = move;
