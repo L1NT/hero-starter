@@ -209,7 +209,7 @@ var moves = {
 		var nearestGrave = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
 			return tile.type === 'Bones';
 		});
-		if (nearestGrave) moves[nearestGrave.direction] += 100/nearestGrave.distance;
+		if (nearestGrave) moves[nearestGrave.direction] += 500/nearestGrave.distance;
 		
 		//diamond mines (careful as it'll cost 20hp to take a mine)
 		var nearestMine = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
@@ -242,7 +242,7 @@ var moves = {
 		    return tile.type === 'HealthWell';
 		  });
 		if (nearestHealth) {
-			moves[nearestHealth.direction] += (100-hero.health) * 4 * nearestHealth.distance;
+			moves[nearestHealth.direction] += (100-hero.health) * 3 * nearestHealth.distance;
 		}
 		
 		//helping others
