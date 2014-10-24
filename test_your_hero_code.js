@@ -25,28 +25,45 @@ var Game = require('./game_logic/Game.js');
 //Get my hero's move function ("brain")
 var heroMoveFunction = require('./hero.js');
 
+var SIZE = 20;
+function rand(max) {
+  max = max || SIZE;
+  return Math.floor(Math.random()*max);
+}
+
 //The move function ("brain") the practice enemy will use
 var enemyMoveFunction = function(gameData, helpers) {
   //Move in a random direction
   var choices = ['North', 'South', 'East', 'West'];
-  return choices[Math.floor(Math.random()*4)];
+  return choices[rand(4)];
 }
 
 //Makes a new game with a 5x5 board
-var game = new Game(5);
+var game = new Game(SIZE);
 
-//Add a health well in the middle of the board
-game.addHealthWell(2,2);
+//Add a health wells
+for (var i=0,len=rand(5)+5;i<len;i++) {
+  game.addHealthWell(rand(),rand());
+}
 
-//Add diamond mines on either side of the health well
-game.addDiamondMine(2,1);
-game.addDiamondMine(2,3);
+//Add diamond mines
+for (var i=0,len=rand(5)+5;i<len;i++) {
+  game.addDiamondMine(rand(),rand());
+}
 
-//Add your hero in the top left corner of the map (team 0)
-game.addHero(0, 0, 'MyHero', 0);
-
-//Add an enemy hero in the bottom left corner of the map (team 1)
-game.addHero(4, 4, 'Enemy', 1);
+//Add heroes
+game.addHero(rand(), rand(), 'MyHero', 0);
+game.addHero(rand(), rand(), 'EnemyH01', 1);
+game.addHero(rand(), rand(), 'TeammateH02', 0);
+game.addHero(rand(), rand(), 'EnemyH03', 1);
+game.addHero(rand(), rand(), 'TeammateH04', 0);
+game.addHero(rand(), rand(), 'EnemyH05', 1);
+game.addHero(rand(), rand(), 'TeammateH06', 0);
+game.addHero(rand(), rand(), 'EnemyH07', 1);
+game.addHero(rand(), rand(), 'TeammateH08', 0);
+game.addHero(rand(), rand(), 'EnemyH09', 1);
+game.addHero(rand(), rand(), 'TeammateH10', 0);
+game.addHero(rand(), rand(), 'EnemyH11', 1);
 
 console.log('About to start the game!  Here is what the board looks like:');
 
@@ -56,13 +73,12 @@ console.log('About to start the game!  Here is what the board looks like:');
 game.board.inspect();
 
 //Play a very short practice game
-var turnsToPlay = 15;
+var turnsToPlay = 50;
 
 for (var i=0; i<turnsToPlay; i++) {
   var hero = game.activeHero;
   var direction;
   if (hero.name === 'MyHero') {
-
     //Ask your hero brain which way it wants to move
     direction = heroMoveFunction(game, helpers);
   } else {
@@ -74,6 +90,9 @@ for (var i=0; i<turnsToPlay; i++) {
   console.log(hero.name + ' tried to move ' + direction);
   console.log(hero.name + ' owns ' + hero.mineCount + ' diamond mines')
   console.log(hero.name + ' has ' + hero.health + ' health')
+  if (hero.name === 'MyHero')
+    game.board.inspect();
   game.handleHeroTurn(direction);
-  game.board.inspect();
 }
+
+game.board.inspect();
