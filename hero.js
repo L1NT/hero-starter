@@ -192,7 +192,7 @@ var moves = {
     	}
     }
   },
-  
+
 	L1NT: function(gameData, helpers) {
 		var hero = gameData.activeHero;
 		var dft = hero.distanceFromTop,
@@ -204,13 +204,19 @@ var moves = {
 			South: 0,
 			West: 0
 		};
-		
+
 		//grave robbing
 		var nearestGrave = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
 			return tile.type === 'Bones';
 		});
-		if (nearestGrave) moves[nearestGrave.direction] += 500/nearestGrave.distance;
-		
+		if (nearestGrave) {
+			if (nearestGrave.distance == 1 && hero.health > 50) {
+				moves[nearestGrave.direction] += 10000/(101 - hero.health)
+			} else {
+				moves[nearestGrave.direction] += 500/nearestGrave.distance;
+			}
+		}
+
 		//diamond mines (careful as it'll cost 20hp to take a mine)
 		var nearestMine = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
 		    if (tile.type === 'DiamondMine') {
@@ -219,24 +225,27 @@ var moves = {
 		        } else {
 		          return true;
 		        }
-		      } else {
-		        return false;
-		      }
-		    });
+			} else {
+				return false;
+			}
+		});
 		if (nearestMine) {
-			moves[nearestMine.direction] += (hero.health * 2) / nearestMine.distance;
+			moves[nearestMine.direction] += (hero.health * 2.5) / (nearestMine.distance ? nearestMine.distance : 1);
 		}
-		
+
 		//attacking enemies (i.e. enemy is adjacent)
 		for (var dir in moves) {
 			var tile = helpers.getTileNearby(gameData.board, dft, dfl, dir);
 			if (tile && tile.type === 'Hero' && tile.team !== hero.team) {
-				moves[dir] += (hero.health - tile.health) * 3;
+				if (tile.health <= 30 && hero.health > 50)
+					moves[dir] += (hero.health - tile.health) * 10;
+				else
+					moves[dir] += (hero.health - tile.health) * 3;
 			}
 		}
-		
+
 		//chasing enemies (i.e. moving towards)
-		
+
 		//replenishing health
 		var nearestHealth = helpers.findNearestObjectDirectionAndDistance(gameData.board, hero, function(tile) {
 		    return tile.type === 'HealthWell';
@@ -244,13 +253,13 @@ var moves = {
 		if (nearestHealth) {
 			moves[nearestHealth.direction] += (100-hero.health) * 3 * nearestHealth.distance;
 		}
-		
+
 		//helping others
-		
+
 		//impassable tiles
 		//(gets a value of zero, if we can't move there)
-		
-		
+
+
 		var direction,
 			value = -10000;
 		for (var dir in moves) {
@@ -259,11 +268,11 @@ var moves = {
 				value = moves[dir];
 			}
 		}
-		
+
 		return direction;
 	}
 };
-  
+
 
 //  Set our heros strategy
 var  move =  moves.L1NT;
