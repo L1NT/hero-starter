@@ -251,7 +251,7 @@ var moves = {
 		    return tile.type === 'HealthWell';
 		  });
 		if (nearestHealth) {
-			moves[nearestHealth.direction] += Math.pow((100-hero.health)/10, 5) * nearestHealth.distance;
+			moves[nearestHealth.direction] += Math.pow((100-hero.health)/10, 3) * Math.pow(nearestHealth.distance, 2);
 		}
 
 		//helping others
