@@ -211,6 +211,10 @@ var moves = {
 		});
 		if (nearestGrave) {
 			if (nearestGrave.distance == 1 && hero.health > 50) {
+			    if (hero.health > 75) {
+    			    //just rob the damn grave if we're next to one & feeling good!
+    			    return nearestGrave.direction;
+			    }
 				moves[nearestGrave.direction] += 10000/(101 - hero.health)
 			} else {
 				moves[nearestGrave.direction] += 500/nearestGrave.distance;
@@ -251,12 +255,12 @@ var moves = {
 		    return tile.type === 'HealthWell';
 		  });
 		if (nearestHealth) {
-            var healthNeed = Math.pow((100-hero.health)/10, 5);
+            var healthNeed = Math.pow((100-hero.health)/10, 4);
             if (nearestHealth.distance == 1 && hero.health < 71) {
                 //stop comparing and just replenish health!
                 return nearestHealth.direction;
             }
-			moves[nearestHealth.direction] += healthNeed * nearestHealth.distance;
+			moves[nearestHealth.direction] += healthNeed * (nearestHealth.distance + 1);
 		}
 
 		//helping others
